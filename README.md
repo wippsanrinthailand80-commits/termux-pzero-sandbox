@@ -17,9 +17,16 @@ Security model:
 ## Installation (Termux)
 
 ```sh
-pkg install clang make python
-git clone https://github.com/yourname/termux-pzero-sandbox.git
+pkg install clang make python tar
+# Option A: git
+git clone https://github.com/wippsanrinthailand80-commits/termux-pzero-sandbox.git
 cd termux-pzero-sandbox
+
+# Option B: curl (no git auth)
+curl -L https://github.com/wippsanrinthailand80-commits/termux-pzero-sandbox/archive/refs/heads/main.tar.gz -o pzero.tar.gz
+tar -xzf pzero.tar.gz
+cd termux-pzero-sandbox-main
+
 make
 make install
 ```
@@ -92,9 +99,16 @@ Security model:
 ## Installation (Termux)
 
 ```sh
-pkg install clang make python
-git clone https://github.com/yourname/termux-pzero-sandbox.git
+pkg install clang make python tar
+# Option A: git
+git clone https://github.com/wippsanrinthailand80-commits/termux-pzero-sandbox.git
 cd termux-pzero-sandbox
+
+# Option B: curl (no git auth)
+curl -L https://github.com/wippsanrinthailand80-commits/termux-pzero-sandbox/archive/refs/heads/main.tar.gz -o pzero.tar.gz
+tar -xzf pzero.tar.gz
+cd termux-pzero-sandbox-main
+
 make
 make install
 ```
