@@ -6,7 +6,8 @@ BASE="${NROOT_ROOTFS:-$HOME/.nroot}"
 mode="${1:-default}"
 
 if [ "$mode" = "default" ]; then
-    exec nroot-init
+    shift
+    exec nroot-init "$@"
 fi
 
 ROOTFS="$BASE/distros/$mode"
