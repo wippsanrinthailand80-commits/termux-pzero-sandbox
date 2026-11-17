@@ -1,0 +1,25 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: make
+      - name: Security tests
+        run: |
+          export PZERO_ALLOW_RO="/tmp/scratchpad"
+          export PZERO_ALLOW_RW="/tmp/scratchpad"
+          mkdir -p /tmp/scratchpad
+          bash tests/test_security.sh
+      - name: Basic tool smoke test
+        run: |
+          export PZERO_ALLOW_RO="/tmp/scratchpad"
+          export PZERO_ALLOW_RW="/tmp/scratchpad"
+          mkdir -p /tmp/scratchpad/t
+          echo hello > /tmp/scratchpad/t/a.txt
+          ./pzero-ls --json /tmp/scratchpad/t
+          ./pzero-cat /tmp/scratchpad/t/a.txt
+          ./pzero-write /tmp/scratchpad/t/b.txt --text "written" --overwrite
+          ./pzero-exec -- /bin/echo "exec ok"
