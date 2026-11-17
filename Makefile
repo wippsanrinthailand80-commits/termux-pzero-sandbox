@@ -28,6 +28,7 @@ install: all
 	install -m 0755 scripts/nroot-init.sh $(PREFIX)/bin/nroot-init
 	install -m 0755 scripts/nroot-install.sh $(PREFIX)/bin/nroot-install
 	install -m 0755 scripts/nroot-install-pzero.sh $(PREFIX)/bin/nroot-install-pzero
+	install -m 0755 scripts/nroot-login.sh $(PREFIX)/bin/nroot-login
 	install -m 0755 scripts/pzero-doctor.sh $(PREFIX)/bin/pzero-doctor
 
 clean:

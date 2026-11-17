@@ -172,4 +172,5 @@ Termux is exposed as `/opt/termux`. Install more software with:
 ```sh
 nroot-install <url> <name>
 nroot-install-pzero   # copy pzero tools into the Nroot rootfs
+nroot-login <default|distro>  # enter clean rootfs or a distro rootfs
 ```
