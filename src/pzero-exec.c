@@ -65,6 +65,17 @@ static void set_limits(int cpu_seconds) {
     setrlimit(RLIMIT_NOFILE, &rl);
 }
 
+
+static int elf_machine(const char *path) {
+    FILE *f = fopen(path, "rb");
+    if (!f) return -1;
+    unsigned char e[20];
+    if (fread(e, 1, 20, f) != 20) { fclose(f); return -1; }
+    fclose(f);
+    if (e[0] != 0x7f || e[1] != 'E' || e[2] != 'L' || e[3] != 'F') return -1;
+    return (int)(e[18] | (e[19] << 8));
+}
+
 int main(int argc, char **argv) {
     int timeout = 30;
     const char *cwd = NULL;
@@ -92,6 +103,22 @@ int main(int argc, char **argv) {
     if (resolve_executable(argv[cmd_start], exe, sizeof(exe)) != 0) {
         fprintf(stderr, "pzero-exec: command not found or not allowed: %s\n", argv[cmd_start]);
         return 127;
+    }
+
+    /* Detect x86/x86_64 binaries and run via QEMU user-mode if available. */
+    char orig_exe[PZERO_MAX_PATH];
+    strcpy(orig_exe, exe);
+    int mach = elf_machine(exe);
+    const char *qemu_name = NULL;
+    if (mach == 3) qemu_name = "qemu-i386";
+    else if (mach == 62) qemu_name = "qemu-x86_64";
+    if (qemu_name) {
+        char qpath[PZERO_MAX_PATH];
+        if (resolve_executable(qemu_name, qpath, sizeof(qpath)) != 0) {
+            fprintf(stderr, "pzero-exec: %s binary requires %s, but it is not installed\n", argv[cmd_start], qemu_name);
+            return 127;
+        }
+        strcpy(exe, qpath);
     }
 
     if (cwd) {
@@ -128,11 +155,20 @@ int main(int argc, char **argv) {
 
     /* Build argv: replace command name with resolved path. */
     int nargs = argc - cmd_start;
-    char **cargv = calloc(nargs + 1, sizeof(char *));
+    int use_qemu = (strcmp(exe, orig_exe) != 0);
+    int total = use_qemu ? nargs + 1 : nargs;
+    char **cargv = calloc(total + 1, sizeof(char *));
     if (!cargv) { perror("calloc"); return 1; }
-    cargv[0] = argv[cmd_start];
-    for (int i = 1; i < nargs; i++) cargv[i] = argv[cmd_start + i];
-    cargv[nargs] = NULL;
+    if (use_qemu) {
+        cargv[0] = exe; /* qemu */
+        cargv[1] = orig_exe; /* target binary */
+        for (int i = 1; i < nargs; i++) cargv[1 + i] = argv[cmd_start + i];
+        cargv[total] = NULL;
+    } else {
+        cargv[0] = argv[cmd_start];
+        for (int i = 1; i < nargs; i++) cargv[i] = argv[cmd_start + i];
+        cargv[nargs] = NULL;
+    }
     execv(exe, cargv);
     fprintf(stderr, "pzero-exec: exec failed: %s\n", strerror(errno));
     return 127;
