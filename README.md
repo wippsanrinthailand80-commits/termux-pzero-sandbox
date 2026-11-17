@@ -159,6 +159,10 @@ make clean && make
 - Read-only bridges are enforced by the tool layer; PRoot binds are inherently read-write at kernel level, so always use `pzero-*` tools for file access.
 - For extra isolation, keep bridge mounts minimal and prefer `ro`.
 EOF
+## Diagnostics
+
+Run `pzero-doctor` to validate your installation and bridge paths.
+
 ## Nroot (clean rootfs mode)
 
 `scripts/nroot-init.sh` creates a minimal, from-scratch rootfs under `~/.nroot/rootfs`
