@@ -1,0 +1,10 @@
+# path mode (ro or rw)
+/data/data/com.termux/files/home rw
+/tmp rw
+/usr ro
+/bin ro
+/etc ro
+/lib ro
+/share ro
+/var ro
+/mnt/pzero/downloads rw
