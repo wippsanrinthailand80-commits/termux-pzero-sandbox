@@ -159,3 +159,12 @@ make clean && make
 - Read-only bridges are enforced by the tool layer; PRoot binds are inherently read-write at kernel level, so always use `pzero-*` tools for file access.
 - For extra isolation, keep bridge mounts minimal and prefer `ro`.
 EOF
+## Nroot (clean rootfs mode)
+
+`scripts/nroot-init.sh` creates a minimal, from-scratch rootfs under `~/.nroot/rootfs`
+with a small set of essential tools, keeping host home isolated as `/host-home`.
+Termux is exposed as `/opt/termux`. Install more software with:
+
+```sh
+nroot-install <url> <name>
+```

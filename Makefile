@@ -25,6 +25,8 @@ install: all
 	install -m 0755 tools/pzero.sh $(PREFIX)/bin/pzero
 	install -m 0755 scripts/init-sandbox.sh $(PREFIX)/bin/pzero-init
 	install -m 0755 scripts/pzero-bridge.sh $(PREFIX)/bin/pzero-bridge
+	install -m 0755 scripts/nroot-init.sh $(PREFIX)/bin/nroot-init
+	install -m 0755 scripts/nroot-install.sh $(PREFIX)/bin/nroot-install
 
 clean:
 	rm -f $(BINS)
