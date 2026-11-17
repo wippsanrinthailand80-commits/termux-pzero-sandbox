@@ -42,12 +42,13 @@ ARGS="$ARGS -b ${HOME}:/host-home"
 export NROOT_ROOTFS="$ROOTFS"
 export HOME="$ROOTFS/home"
 mkdir -p "$ROOTFS/home"
+export PATH="/usr/local/bin:/opt/termux/bin:/bin:/usr/bin"
 
 SHELL_BIN="/bin/sh"
 if [ -x "$PREFIX/bin/bash" ]; then SHELL_BIN="/bin/bash"; fi
 
 if [ $# -gt 0 ]; then
-    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /home /bin/sh -c "export HOME=/home; cd /home; exec \"\$@\"" sh "$@"
+    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /home /bin/sh -c "export HOME=/home; export PATH=/usr/local/bin:/opt/termux/bin:/bin:/usr/bin; cd /home; exec \"\$@\"" sh "$@"
 else
-    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /home /bin/sh -c "export HOME=/home; cd /home; exec /bin/sh -l"
+    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /home /bin/sh -c "export HOME=/home; export PATH=/usr/local/bin:/opt/termux/bin:/bin:/usr/bin; cd /home; exec /bin/sh -l"
 fi

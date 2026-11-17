@@ -7,6 +7,10 @@ mode="${1:-default}"
 
 if [ "$mode" = "default" ]; then
     shift
+    # ensure pzero tools available inside Nroot
+    if [ ! -x "${NROOT_ROOTFS:-$HOME/.nroot}/rootfs/usr/local/bin/pzero" ]; then
+        nroot-install-pzero >/dev/null 2>&1 || true
+    fi
     exec nroot-init "$@"
 fi
 
@@ -32,13 +36,14 @@ ARGS="$ARGS -b ${HOME}:/host-home"
 
 export NROOT_ROOTFS="$BASE"
 export HOME="/root"
+export PATH="/usr/local/bin:/opt/termux/bin:/bin:/usr/bin"
 
 SHELL_BIN="/bin/sh"
 [ -x "$ROOTFS/bin/bash" ] && SHELL_BIN="/bin/bash"
 
 if [ $# -gt 1 ]; then
     shift
-    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /root /bin/sh -c "export HOME=/root; cd /root; exec \"\$@\"" sh "$@"
+    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /root /bin/sh -c "export HOME=/root; export PATH=/usr/local/bin:/opt/termux/bin:/bin:/usr/bin; cd /root; exec \"\$@\"" sh "$@"
 else
-    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /root /bin/sh -c "export HOME=/root; cd /root; exec $SHELL_BIN -l"
+    exec "$PREFIX/bin/proot" $ARGS -r "$ROOTFS" -w /root /bin/sh -c "export HOME=/root; export PATH=/usr/local/bin:/opt/termux/bin:/bin:/usr/bin; cd /root; exec $SHELL_BIN -l"
 fi
