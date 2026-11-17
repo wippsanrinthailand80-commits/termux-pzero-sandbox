@@ -1,6 +1,6 @@
 #!/bin/sh
 # thin dispatcher: exec the matching native tool without forking a subprocess
-set -eu
+set -u
 
 SELF="$0"
 case "$SELF" in
@@ -20,15 +20,29 @@ fi
 
 CMD="${1:-}"
 [ $# -gt 0 ] && shift
+
+LOGDIR="${HOME}/.config/pzero"
+mkdir -p "$LOGDIR" 2>/dev/null || true
+LOG="$LOGDIR/audit.log"
+_ts() { date '+%Y-%m-%dT%H:%M:%S' 2>/dev/null || echo unknown; }
 case "$CMD" in
     ls|cat|write|exec)
-        exec "$DIR/pzero-$CMD" "$@"
+        "$DIR/pzero-$CMD" "$@"
+        _rc=$?
+        printf '%s pzero %s %s rc=%s\n' "$(_ts)" "$CMD" "$*" "$_rc" >> "$LOG" 2>/dev/null || true
+        exit $_rc
         ;;
     bridges|bridge)
-        exec "$DIR/pzero-bridge" "$@"
+        "$DIR/pzero-bridge" "$@"
+        _rc=$?
+        printf '%s pzero-bridge %s rc=%s\n' "$(_ts)" "$*" "$_rc" >> "$LOG" 2>/dev/null || true
+        exit $_rc
         ;;
     init)
-        exec "$DIR/pzero-init" "$@"
+        "$DIR/pzero-init" "$@"
+        _rc=$?
+        printf '%s pzero-init %s rc=%s\n' "$(_ts)" "$*" "$_rc" >> "$LOG" 2>/dev/null || true
+        exit $_rc
         ;;
     -h|--help|help)
         echo "Usage: pzero {ls|cat|write|exec|bridge} [args]"
